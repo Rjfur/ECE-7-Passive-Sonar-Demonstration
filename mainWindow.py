@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, qApp, QMessageBox, QWidget, QTabWidget,
                             QHBoxLayout, QVBoxLayout, QTableView, QLabel, \
                             QLineEdit, QGroupBox, QComboBox, QListWidget, \
                             QPushButton, QAction, QActionGroup, QAbstractItemView, \
-                            QFileDialog, QApplication, QSizePolicy
+                            QFileDialog, QApplication, QSizePolicy, QButtonGroup, QGridLayout
 from PyQt5.QtCore import pyqtSignal
 
 # Matplotlib imports for graphs/plots
@@ -86,7 +86,7 @@ class MainWidget(QWidget):
 class PlotCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        #self.axes = fig.add_subplot(111)
 
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -115,11 +115,10 @@ class ControlLayout(QVBoxLayout):
 
     def initUI(self):
         self.controlGroupBox = ControlGroupBox()
-        self.muteButton = QPushButton()
-        self.muteButton.setText("Mute/Unmute")
-        self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
+        self.muteButton = QPushButton("Mute/Unmute")
+        self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
 
-        self.addWidget(self.controlGroupBox, 7)
+        self.addWidget(self.controlGroupBox, 5)
         self.addWidget(self.muteButton, 1)
 
 class ControlGroupBox(QGroupBox):
@@ -136,82 +135,94 @@ class ControlGroupBox(QGroupBox):
         self.initUI()
 
     def initUI(self):
-        self.buttonLayout = QVBoxLayout()
+        self.buttonLayout = QGridLayout()
         self.initButtons()
+        self.createSoundButtonGroup()
+        self.createCommentaryButtonGroup()
+        self.setButtonSizePolicies(QSizePolicy.Preferred, QSizePolicy.Preferred)    # set all button size policies
         self.setLayout(self.buttonLayout)
 
     def initButtons(self):
-        self.button1Layout = QHBoxLayout()
-        self.button1 = QPushButton()
-        self.button1.setText("Whale")
-        self.button1.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button1Commentary = QPushButton()
-        self.button1Commentary.setText("?")
-        self.button1Commentary.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button1Layout.addWidget(self.button1, 3)
-        self.button1Layout.addWidget(self.button1Commentary, 1)
-        self.buttonLayout.addLayout(self.button1Layout)
+        self.soundButtonLayout = QVBoxLayout()
+        self.commentaryButtonLayout = QVBoxLayout()
 
-        self.button2Layout = QHBoxLayout()
-        self.button2 = QPushButton()
-        self.button2.setText("Shrimp")
-        self.button2.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button2Commentary = QPushButton()
-        self.button2Commentary.setText("?")
-        self.button2Commentary.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button2Layout.addWidget(self.button2, 3)
-        self.button2Layout.addWidget(self.button2Commentary, 1)
-        self.buttonLayout.addLayout(self.button2Layout)
+        self.button1 = QPushButton("Whale")
+        self.button2 = QPushButton("Shrimp")
+        self.button3 = QPushButton("Shipping Trawler")
+        self.button4 = QPushButton("Quiet Target")
+        self.button1.setCheckable(True)
+        self.button2.setCheckable(True)
+        self.button3.setCheckable(True)
+        self.button4.setCheckable(True)
+        #self.button1.toggle()
 
-        self.button3Layout = QHBoxLayout()
-        self.button3 = QPushButton()
-        self.button3.setText("Shipping Trawler")
-        self.button3.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button3.clicked.connect()
-        self.button3Commentary = QPushButton()
-        self.button3Commentary.setText("?")
-        self.button3Commentary.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button3Layout.addWidget(self.button3, 3)
-        self.button3Layout.addWidget(self.button3Commentary, 1)
-        self.buttonLayout.addLayout(self.button3Layout)
+        self.soundButtonLayout.addWidget(self.button1)
+        self.soundButtonLayout.addWidget(self.button2)
+        self.soundButtonLayout.addWidget(self.button3)
+        self.soundButtonLayout.addWidget(self.button4)
 
-        self.button4Layout = QHBoxLayout()
-        self.button4 = QPushButton()
-        self.button4.setText("Quiet Target")
-        self.button4.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button4Commentary = QPushButton()
-        self.button4Commentary.setText("?")
-        self.button4Commentary.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.button4Layout.addWidget(self.button4, 3)
-        self.button4Layout.addWidget(self.button4Commentary, 1)
-        self.buttonLayout.addLayout(self.button4Layout)
-        
-        self.button5 = QPushButton()
-        self.button5.setText("User")
-        self.button5.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding))
-        self.buttonLayout.addWidget(self.button5)
+        self.button1Commentary = QPushButton("?")
+        self.button2Commentary = QPushButton("?")
+        self.button3Commentary = QPushButton("?")
+        self.button4Commentary = QPushButton("?")
 
-    def button1Pressed(self):
-        pass
+        self.commentaryButtonLayout.addWidget(self.button1Commentary)
+        self.commentaryButtonLayout.addWidget(self.button2Commentary)
+        self.commentaryButtonLayout.addWidget(self.button3Commentary)
+        self.commentaryButtonLayout.addWidget(self.button4Commentary)
 
-    def button1Pressed(self):
-        pass
+        self.button5 = QPushButton("User Input")
 
-    def button1Pressed(self):
-        pass
+        self.buttonLayout.addLayout(self.soundButtonLayout, 0, 0, 4, 1)
+        self.buttonLayout.addLayout(self.commentaryButtonLayout, 0, 1, 4, 1)
+        self.buttonLayout.addWidget(self.button5, 4, 0, 1, 2)
 
-    def button1Pressed(self):
-        pass
+    def createSoundButtonGroup(self):
+        """
+        Creates a QButtonGroup for the four output mode buttons. Makes it easier to determine which
+        button within the group was pressed.
+        """
+        self.soundButtonGroup = QButtonGroup()
+        self.soundButtonGroup.setExclusive(False)
+        self.soundButtonGroup.addButton(self.button1, 1)
+        self.soundButtonGroup.addButton(self.button2, 2)
+        self.soundButtonGroup.addButton(self.button3, 3)
+        self.soundButtonGroup.addButton(self.button4, 4)
 
-    def button1Pressed(self):
-        pass
+        self.soundButtonGroup.buttonClicked.connect(self.onSoundButtonClicked)
 
-    def button1Pressed(self):
-        pass
+    def onSoundButtonClicked(self, btn):
+        print("{0}".format(btn.text()))
+        print(self.soundButtonGroup.checkedId())
+        #self.button1.toggle()
 
-    def button1Pressed(self):
-        pass
+    def createCommentaryButtonGroup(self):
+        """
+        Creates a QButtonGroup for the four commentary buttons. Makes it easier to determine which
+        button within the group was pressed.
+        """
+        self.commentaryButtonGroup = QButtonGroup()
+        self.commentaryButtonGroup.addButton(self.button1Commentary, 1)
+        self.commentaryButtonGroup.addButton(self.button2Commentary, 2)
+        self.commentaryButtonGroup.addButton(self.button3Commentary, 3)
+        self.commentaryButtonGroup.addButton(self.button4Commentary, 4)
 
+
+    def setButtonSizePolicies(self, hSizePolicy, vSizePolicy):
+        # left column, output mode sound buttons
+        self.button1.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button2.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button3.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button4.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+
+        # right column, commentary buttons
+        self.button1Commentary.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button2Commentary.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button3Commentary.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+        self.button4Commentary.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
+
+        # button 5, user input button
+        self.button5.setSizePolicy(QSizePolicy(hSizePolicy, vSizePolicy))
 
 if __name__ == "__main__":
     logging.info("Starting application.")
