@@ -36,7 +36,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
     parents=[parser])
 parser.add_argument(
-    'channels', type=int, default=[1, 3], nargs='*', metavar='CHANNEL',
+    'channels', type=int, default=[1, 2], nargs='*', metavar='CHANNEL',
     help='input channels to plot (default: the first)')
 parser.add_argument(
     '-d', '--device', type=int_or_str,
@@ -109,10 +109,11 @@ try:
         ax.legend(['channel {}'.format(c) for c in args.channels],
                   loc='lower left', ncol=len(args.channels))
     ax.axis((0, len(plotdata), -1, 1))
+    # ax.set_xlabel("time")
     ax.set_yticks([0])
     ax.yaxis.grid(True)
-    ax.tick_params(bottom=False, top=False, labelbottom=False,
-                   right=False, left=False, labelleft=False)
+    # ax.tick_params(bottom=False, top=False, labelbottom=False,
+                #    right=False, left=False, labelleft=False)
     fig.tight_layout(pad=0)
 
     stream = sd.InputStream(

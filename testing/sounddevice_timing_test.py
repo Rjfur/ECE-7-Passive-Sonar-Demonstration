@@ -25,8 +25,8 @@ def callback2(indata, frames, time, status):
 if __name__ == "__main__":
     device_info = sd.query_devices()
 
-    stream = sd.InputStream(samplerate=44100, blocksize=0, device=0, channels=2, dtype=np.int16, latency="low", callback=callback)
-    stream2 = sd.InputStream(samplerate=44100, blocksize=0, device=2, dtype=np.int16, latency="low", callback=callback2)
+    stream = sd.InputStream(samplerate=44100, blocksize=2048, device=8, channels=2, dtype=np.int16, latency="low", callback=callback)
+    stream2 = sd.InputStream(samplerate=44100, blocksize=2048, device=14, dtype=np.int16, latency="low", callback=callback2)
     stream.start()
     stream2.start()
     stream.stop()

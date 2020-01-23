@@ -6,9 +6,11 @@ import numpy as np
 # are the two channels the same?
 
 def callback(indata, frames, time, status):
+    # print("ADC time: ", time.inputBufferAdcTime)
+    # print("current time: ", time.currentTime)
+    # print("time difference: ", time.inputBufferAdcTime - time.currentTime)
     # Ldata = [indata[i][0] for i in range(len(indata))]
     # Rdata = [indata[j][1] for j in range(len(indata))]
-    # print("####")
     # print("L:")
     # print(Ldata)
     # print("R:")
@@ -20,11 +22,11 @@ def callback(indata, frames, time, status):
         if (Ldata != Rdata):
             print("Left and right channels are not equal!")
             print("Difference: ", Rdata - Ldata)
-    
+    print("####")
 
 if __name__ == "__main__":
     device_info = sd.query_devices()
 
-    stream = sd.InputStream(samplerate=44100, blocksize=0, device=0, channels=2, dtype=np.int16, latency="low", callback=callback)
+    stream = sd.InputStream(samplerate=44100, blocksize=0, device=32, channels=2, dtype=np.int16, latency="low", callback=callback)
     stream.start()
     stream.stop()
