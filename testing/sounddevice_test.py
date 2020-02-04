@@ -1,4 +1,3 @@
-
 """Plot the live microphone signal(s) with matplotlib.
 
 Matplotlib and NumPy have to be installed.
@@ -7,7 +6,6 @@ Matplotlib and NumPy have to be installed.
 import argparse
 import queue
 import sys
-import time
 
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
@@ -22,7 +20,7 @@ def int_or_str(text):
     except ValueError:
         return text
 
-#sd.default.device = "aggregate device"
+
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument(
     '-l', '--list-devices', action='store_true',
@@ -50,7 +48,7 @@ parser.add_argument(
 parser.add_argument(
     '-b', '--blocksize', type=int, help='block size (in samples)')
 parser.add_argument(
-    '-r', '--samplerate', type=float, help='sampling rate of audio device')
+    '-r', '--samplerate', type=float, default=48000, help='sampling rate of audio device')
 parser.add_argument(
     '-n', '--downsample', type=int, default=10, metavar='N',
     help='display every Nth sample (default: %(default)s)')
@@ -61,14 +59,12 @@ mapping = [c - 1 for c in args.channels]  # Channel numbers start with 1
 q = queue.Queue()
 
 
-def audio_callback(indata, frames, time1, status):
+def audio_callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
-    start = time.process_time()     # start timer
     if status:
         print(status, file=sys.stderr)
     # Fancy indexing with mapping creates a (necessary!) copy:
     q.put(indata[::args.downsample, mapping])
-    print("audio callback time = {0} ms".format((time.process_time() - start)*1000))  # end timer
 
 
 def update_plot(frame):
@@ -79,7 +75,6 @@ def update_plot(frame):
 
     """
     global plotdata
-    start = time.process_time()
     while True:
         try:
             data = q.get_nowait()
@@ -90,8 +85,6 @@ def update_plot(frame):
         plotdata[-shift:, :] = data
     for column, line in enumerate(lines):
         line.set_ydata(plotdata[:, column])
-
-    print("update plot time = {0} ms".format((time.process_time() - start)*1000))  # end timer
     return lines
 
 
@@ -109,16 +102,15 @@ try:
         ax.legend(['channel {}'.format(c) for c in args.channels],
                   loc='lower left', ncol=len(args.channels))
     ax.axis((0, len(plotdata), -1, 1))
-    # ax.set_xlabel("time")
     ax.set_yticks([0])
     ax.yaxis.grid(True)
-    # ax.tick_params(bottom=False, top=False, labelbottom=False,
-                #    right=False, left=False, labelleft=False)
+    ax.tick_params(bottom=False, top=False, labelbottom=False,
+                   right=False, left=False, labelleft=False)
     fig.tight_layout(pad=0)
 
     stream = sd.InputStream(
-        device=args.device, channels=max(args.channels),
-        samplerate=args.samplerate, callback=audio_callback)
+        device="Line 1 (Virtual Cable 1), Windows WDM-KS", channels=max(args.channels),
+        samplerate=48000, callback=audio_callback, latency="low")
     ani = FuncAnimation(fig, update_plot, interval=args.interval, blit=True)
     with stream:
         plt.show()

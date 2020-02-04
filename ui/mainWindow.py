@@ -1,12 +1,15 @@
 # PyQt5 imports for UI elements
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                             QPushButton, QSizePolicy, qApp
+from PyQt5.QtCore import pyqtSignal
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
 from ui.plot import PlotCanvas
 
 # local core imports
+from core.input import UserInputStream
+from core.output import UserOutputStream
 
 # For handling debug output
 import logging
@@ -30,10 +33,18 @@ class MainWindow(QMainWindow):
         self._main = MainWidget()
         self.setCentralWidget(self._main)
 
+        # initialize other classes
+        self.inputStream = UserInputStream()
+
         # signal connections
         # input and output modes use buttons, plot, audio streams
+        self._main.controlLayout.controlGroupBox.beginInputModeSignal.connect(self.beginInputMode)
+        self._main.controlLayout.controlGroupBox.endInputModeSignal.connect(self.endInputMode)
+        self._main.controlLayout.controlGroupBox.beginOutputModeSignal.connect(self.beginOutputMode)
+        self._main.controlLayout.controlGroupBox.endOutputModeSignal.connect(self.endOutputMode)
+        self._main.controlLayout.muteSignal.connect(self.mute)
+        self._main.controlLayout.unmuteSignal.connect(self.unmute)
 
-        
         # set debug mode?
         self.debug = debug
 
@@ -61,16 +72,24 @@ class MainWindow(QMainWindow):
         qApp.quit()
 
     def beginInputMode(self):
-        pass
-
-    def beginOutputMode(self):
-        pass
+        print("BEGINNING INPUT MODE...")
+        self.inputStream.start()
 
     def endInputMode(self):
-        pass
+        print("END INPUT MODE.")
+        self.inputStream.stop()
+
+    def beginOutputMode(self, btnID):
+        print("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
 
     def endOutputMode(self):
-        pass
+        print("END OUTPUT MODE.")
+
+    def mute(self):
+        print("SOUND MUTED.")
+
+    def unmute(self):
+        print("SOUND ON.")
 
 class MainWidget(QWidget):
     """
@@ -92,6 +111,11 @@ class ControlLayout(QVBoxLayout):
     """
     description to be created at a later time
     """
+
+    # signals
+    muteSignal = pyqtSignal()
+    unmuteSignal = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -100,9 +124,18 @@ class ControlLayout(QVBoxLayout):
         self.controlGroupBox = ControlGroupBox()    # defined in ui/controlGroupBox.py
         self.muteButton = QPushButton("Mute/Unmute")
         self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        self.muteButton.setCheckable(True)
+
+        self.muteButton.clicked.connect(self.onMuteButtonClicked)
 
         self.addWidget(self.controlGroupBox, 5)
         self.addWidget(self.muteButton, 1)
+
+    def onMuteButtonClicked(self, btnChecked):
+        if btnChecked:
+            self.muteSignal.emit()
+        else:
+            self.unmuteSignal.emit()
 
 # if __name__ == "__main__":
 #     logging.info("Starting application.")
