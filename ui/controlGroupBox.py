@@ -151,8 +151,8 @@ class ControlGroupBox(QGroupBox):
         if btnChecked:
             self.endInputModeSignal.emit()
             # print("end input mode signal emitted")
-            print(btnID)
-            print(len(self.soundButtonGroup.buttons()))
+            # print(btnID)
+            # print(len(self.soundButtonGroup.buttons()))
             self.beginOutputModeSignal.emit(btnID + len(self.soundButtonGroup.buttons()))
                                                     # first comm btn ID is after last sound btn ID
                                                     # allows number of sound buttons to change if needed

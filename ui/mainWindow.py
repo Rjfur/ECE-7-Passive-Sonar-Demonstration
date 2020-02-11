@@ -74,6 +74,7 @@ class MainWindow(QMainWindow):
     def beginInputMode(self):
         print("BEGINNING INPUT MODE...")
         self.inputStream.start()
+        self._main.plot.beginAnimation(self.inputStream)
 
     def endInputMode(self):
         print("END INPUT MODE.")
