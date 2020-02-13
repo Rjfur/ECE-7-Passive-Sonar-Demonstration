@@ -14,3 +14,4 @@ Select one of the question marks to hear commentary along with the sound labeled
 * python-sounddevice
 * numpy
 * matplotlib
+* SoundFile
