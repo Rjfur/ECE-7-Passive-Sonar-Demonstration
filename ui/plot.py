@@ -37,7 +37,7 @@ class PlotCanvas(FigureCanvas):
         self.draw()
 
     def beginAnimation(self, stream):
-        self.anim = FuncAnimation(self.fig, self.animateFFT, init_func=self.clearPlot, interval=20, fargs=(stream,))
+        self.anim = FuncAnimation(self.fig, self.animateFrame, init_func=self.clearPlot, interval=20, fargs=(stream,))
         
         # plt.show()
         self.draw()

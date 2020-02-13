@@ -11,7 +11,7 @@ class UserInputStream(sd.InputStream):
     def __init__(self):
         # call sd.InputStream initialization
         super().__init__(samplerate=48000, device="Line 1 (Virtual Audio Cable), Windows WASAPI",
-                        channels=2, dtype=np.int16, callback=self.inputCallback)
+                        channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
         # initial setup
         # self.samplerate = 44100
         # self.device = "Mic 1 (Virtual Cable 1), Windows WDM-KS" # kernel streaming

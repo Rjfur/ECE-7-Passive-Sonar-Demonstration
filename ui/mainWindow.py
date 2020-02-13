@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
 
         # initialize other classes
         self.inputStream = UserInputStream()
+        self.outputStream = UserOutputStream()
 
         # signal connections
         # input and output modes use buttons, plot, audio streams
@@ -82,9 +83,11 @@ class MainWindow(QMainWindow):
 
     def beginOutputMode(self, btnID):
         print("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
+        self.outputStream.buttonToFile(btnID)
 
     def endOutputMode(self):
         print("END OUTPUT MODE.")
+        self.outputStream.stopPlayback()
 
     def mute(self):
         print("SOUND MUTED.")
