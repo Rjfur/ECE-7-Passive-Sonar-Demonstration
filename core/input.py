@@ -10,18 +10,26 @@ class UserInputStream(sd.InputStream):
     """
     def __init__(self):
         # call sd.InputStream initialization
-        super().__init__(samplerate=48000, device="Line 1 (Virtual Audio Cable), Windows WASAPI",
-                        channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
-        # initial setup
-        # self.samplerate = 44100
-        # self.device = "Mic 1 (Virtual Cable 1), Windows WDM-KS" # kernel streaming
-        # self.dtype = np.int16
-        # self.latency = "low"    # ???
-        # self.callback = self.inputCallback
+        # Try to open Virtual Audio Cable input device. If the Virtual Cable is not active, then initiate the
+        # sounddevice input stream with default device
+        try:
+            super().__init__(samplerate=48000, device="Line 1 (Virtual Audio Cable), Windows WASAPI",
+                             channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
+        except ValueError:
+            super().__init__(samplerate=48000, channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
 
+        # initialize values used for input callback
         self.currentTime = 0
+        #self.timeDifference = 0
+        self.time_x = np.linspace(0.0, 0.1, 480)
 
+        self.l = np.linspace(0.0, 1.0, 480)
+        self.r = np.linspace(0.0, 1.0, 480)
 
+        self.fftL = []
+        self.fftR = []
+
+        # used for setting up plot
         self.fig = plt.figure()
         # self.ax = plt.axes(xlim=(0, 4), ylim=(-2, 2))
         self.ax = plt.axes()
@@ -39,6 +47,8 @@ class UserInputStream(sd.InputStream):
         # print("{0:6} | {1:6}".format(indata[0][0], indata[0][1]))
 
         # print((time.currentTime - self.currentTime) * 1000)
+
+        # print(self.latency)
         self.timeDifference = time.currentTime - self.currentTime
         self.currentTime = time.currentTime
         # print(indata.shape[0])

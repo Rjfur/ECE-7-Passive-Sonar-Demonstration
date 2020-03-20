@@ -109,7 +109,8 @@ try:
     fig.tight_layout(pad=0)
 
     stream = sd.InputStream(
-        device="Line 1 (Virtual Cable 1), Windows WDM-KS", channels=max(args.channels),
+        #device="Line 1 (Virtual Cable 1), Windows WDM-KS", 
+        channels=max(args.channels),
         samplerate=48000, callback=audio_callback, latency="low")
     ani = FuncAnimation(fig, update_plot, interval=args.interval, blit=True)
     with stream:
