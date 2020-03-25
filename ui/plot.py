@@ -8,13 +8,20 @@ import numpy as np
 
 from PyQt5.QtWidgets import QSizePolicy
 
+# used for measuring time for debugging
+import time
+
+# For handling debug output
+import logging
+
 # from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
 # from matplotlib.backends.backend_qt5agg import FigureCanvas, \
 #                                     NavigationToolbar2QT as NavigationToolbar
 # from matplotlib.figure import Figure
 
 class PlotCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, debug, parent=None, width=5, height=4, dpi=100):
+        self.debug = debug
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         #self.axes = fig.add_subplot(111)
 
@@ -51,6 +58,9 @@ class PlotCanvas(FigureCanvas):
         # frame automatically passed to function
         # self.ax.plot(stream.time_x, stream.r)
 
+        if self.debug["time_update"]:
+            beginFrame = time.time()
+
         x = stream.time_x
         y1 = stream.l[:480] # limit to first 480 samples
         y2 = stream.r[:480] # limit to first 480 samples
@@ -59,6 +69,9 @@ class PlotCanvas(FigureCanvas):
         self.ax.clear()
         self.ax.plot(x, y1)
         self.ax.plot(x, y2)
+
+        if self.debug["time_update"]:
+            logging.info(time.time() - beginFrame)
 
         return self.line,
 

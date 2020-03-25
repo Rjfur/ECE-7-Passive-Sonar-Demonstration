@@ -4,11 +4,17 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+# For handling debug output
+import logging
+
+# For getting size of sample in bytes
+import sys
+
 class UserInputStream(sd.InputStream):
     """
     description to be created at a later time
     """
-    def __init__(self):
+    def __init__(self, debug):
         # call sd.InputStream initialization
         # Try to open Virtual Audio Cable input device. If the Virtual Cable is not active, then initiate the
         # sounddevice input stream with default device
@@ -17,6 +23,8 @@ class UserInputStream(sd.InputStream):
                              channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
         except ValueError:
             super().__init__(samplerate=48000, channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
+
+        self.debug = debug
 
         # initialize values used for input callback
         self.currentTime = 0
@@ -51,7 +59,6 @@ class UserInputStream(sd.InputStream):
         # print(self.latency)
         self.timeDifference = time.currentTime - self.currentTime
         self.currentTime = time.currentTime
-        # print(indata.shape[0])
         self.time_x = np.linspace(0.0, self.timeDifference, 480)
 
         self.l = [channel[0] for channel in indata]
@@ -59,6 +66,16 @@ class UserInputStream(sd.InputStream):
 
         self.fftL = np.fft.fft(self.l)
         self.fftR = np.fft.fft(self.r)
+
+        if self.debug["samples"]:
+            logging.info(indata.shape[0])
+        if self.debug["amplitude"]:
+            logging.info(indata)
+        if self.debug["bytes"]:
+            # logging.info(indata[0][0])
+            logging.info(sys.getsizeof(indata[0][0]))   # type: numpy mdarray
+        if self.debug["time_processing"]:
+            logging.info("processing time: {0}".format(time.inputBufferAdcTime - time.currentTime))
 
         # print(len(l))
         # print(len(r))

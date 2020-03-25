@@ -3,6 +3,12 @@ from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QSizePolicy, \
                             QButtonGroup, QGridLayout
 from PyQt5.QtCore import pyqtSignal
 
+# used for measuring time for debugging
+import time
+
+# For handling debug output
+import logging
+
 class ControlGroupBox(QGroupBox):
     """
     description to be created at a later time
@@ -14,9 +20,12 @@ class ControlGroupBox(QGroupBox):
     beginOutputModeSignal = pyqtSignal(int)
     endOutputModeSignal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, debug):
         super().__init__()
         self.initUI()
+        self.debug = debug
+        # self.outputClickedTime = time.time()
+        # self.inputClickedTime = time.time()
 
     def initUI(self):
         self.buttonLayout = QGridLayout()
@@ -24,10 +33,6 @@ class ControlGroupBox(QGroupBox):
         self.createSoundButtonGroup()
         self.createCommentaryButtonGroup()
         self.setLayout(self.buttonLayout)
-
-    def initStreams(self):
-        self.inStream = UserInputStream()
-        self.outStream = UserOutputStream()
 
     #region BUTTON SETUP
     def initButtons(self):
@@ -37,14 +42,14 @@ class ControlGroupBox(QGroupBox):
         self.button1 = self.createButton("Whale", self.soundButtonLayout)
         self.button2 = self.createButton("Shrimp", self.soundButtonLayout)
         self.button3 = self.createButton("Shipping Trawler", self.soundButtonLayout)
-        self.button4 = self.createButton("Quiet Target", self.soundButtonLayout)
+        #self.button4 = self.createButton("Quiet Target", self.soundButtonLayout)
         # self.hiddenButton = QPushButton()
         # self.hiddenButton.setCheckable(True)
 
         self.button1Commentary = self.createButton("? 1", self.commentaryButtonLayout)
         self.button2Commentary = self.createButton("? 2", self.commentaryButtonLayout)
         self.button3Commentary = self.createButton("? 3", self.commentaryButtonLayout)
-        self.button4Commentary = self.createButton("? 4", self.commentaryButtonLayout)
+        #self.button4Commentary = self.createButton("? 4", self.commentaryButtonLayout)
 
         self.userInputButton = QPushButton("User Input")
         self.userInputButton.setCheckable(True)
@@ -77,7 +82,7 @@ class ControlGroupBox(QGroupBox):
         self.soundButtonGroup.addButton(self.button1, 1)
         self.soundButtonGroup.addButton(self.button2, 2)
         self.soundButtonGroup.addButton(self.button3, 3)
-        self.soundButtonGroup.addButton(self.button4, 4)
+        # self.soundButtonGroup.addButton(self.button4, 4)
         # self.soundButtonGroup.addButton(self.hiddenButton, 5)
 
         self.soundButtonGroup.buttonClicked.connect(self.onSoundButtonClicked)
@@ -92,7 +97,7 @@ class ControlGroupBox(QGroupBox):
         self.commentaryButtonGroup.addButton(self.button1Commentary, 1)
         self.commentaryButtonGroup.addButton(self.button2Commentary, 2)
         self.commentaryButtonGroup.addButton(self.button3Commentary, 3)
-        self.commentaryButtonGroup.addButton(self.button4Commentary, 4)
+        # self.commentaryButtonGroup.addButton(self.button4Commentary, 4)
 
         self.commentaryButtonGroup.buttonClicked.connect(self.onCommentaryButtonClicked)
 
@@ -104,7 +109,11 @@ class ControlGroupBox(QGroupBox):
         # stop playing of other sounds
         # stop playing of commentary sounds
         # stop input mode
-        print("\t{0}".format(btn.text()))
+
+        # debug
+        self.clickedTime = time.time()
+
+        logging.info("\t{0}".format(btn.text()))
         btnID = self.soundButtonGroup.checkedId()
 
         btnChecked = btn.isChecked()
@@ -136,7 +145,11 @@ class ControlGroupBox(QGroupBox):
         # stop playing of other sounds
         # stop playing of commentary sounds
         # stop input mode
-        print("\t{0}".format(btn.text()))
+
+        # debug
+        self.clickedTime = time.time()
+
+        logging.info("\t{0}".format(btn.text()))
         btnID = self.commentaryButtonGroup.checkedId()
 
         btnChecked = btn.isChecked()
@@ -163,6 +176,10 @@ class ControlGroupBox(QGroupBox):
 
     def onUserInputButtonClicked(self, btnChecked):
         # uncheck all other buttons
+
+        # debug
+        self.clickedTime = time.time()
+
         for button in self.commentaryButtonGroup.buttons():
             button.setChecked(False)
         for button in self.soundButtonGroup.buttons():

@@ -2,6 +2,7 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                             QPushButton, QSizePolicy, qApp
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtMultimedia import QSound
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
@@ -14,13 +15,19 @@ from core.output import UserOutputStream
 # For handling debug output
 import logging
 
+# used for measuring time for debugging
+import time
+
 class MainWindow(QMainWindow):
     # debug mode?
-    def __init__(self, debug=False):
+    def __init__(self, debug):
         """
         description to be created at a later time
         """
         super().__init__()
+
+        # set debug mode
+        self.debug = debug
 
         # setup main window parameters
         self.title = "Passive Sonar Demonstration System"
@@ -30,11 +37,11 @@ class MainWindow(QMainWindow):
         self.height = 720
         self.minWidth = 800
         self.minHeight = 600
-        self._main = MainWidget()
+        self._main = MainWidget(debug)
         self.setCentralWidget(self._main)
 
         # initialize other classes
-        self.inputStream = UserInputStream()
+        self.inputStream = UserInputStream(debug)
         self.outputStream = UserOutputStream()
 
         # signal connections
@@ -45,9 +52,6 @@ class MainWindow(QMainWindow):
         self._main.controlLayout.controlGroupBox.endOutputModeSignal.connect(self.endOutputMode)
         self._main.controlLayout.muteSignal.connect(self.mute)
         self._main.controlLayout.unmuteSignal.connect(self.unmute)
-
-        # set debug mode?
-        self.debug = debug
 
         self.initUI()
         logging.info("UI loaded.")
@@ -73,40 +77,58 @@ class MainWindow(QMainWindow):
         qApp.quit()
 
     def beginInputMode(self):
-        print("BEGINNING INPUT MODE...")
+        logging.info("BEGINNING INPUT MODE...")
         self.inputStream.start()
         self._main.plot.beginAnimation(self.inputStream)
+        if self.debug["time_buttons"]:
+            logging.info("Time to begin input mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
 
     def endInputMode(self):
-        print("END INPUT MODE.")
+        logging.info("END INPUT MODE.")
         self.inputStream.stop()
+        # starting output mode runs the endInputMode method
+        # if input mode has not been run, the animation was not created yet
+        try:
+            self._main.plot.anim.event_source.stop()    # make sure animation stops
+        except AttributeError:
+            pass
+        if self.debug["time_buttons"]:
+            logging.info("Time to stop input mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
 
     def beginOutputMode(self, btnID):
-        print("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
+        logging.info("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
         self.outputStream.buttonToFile(btnID)
+        if self.debug["time_buttons"]:
+            logging.info("Time to begin output mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
 
     def endOutputMode(self):
-        print("END OUTPUT MODE.")
+        logging.info("END OUTPUT MODE.")
         self.outputStream.stopPlayback()
+        if self.debug["time_buttons"]:
+            logging.info("Time to stop output mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
 
     def mute(self):
-        print("SOUND MUTED.")
+        logging.info("SOUND MUTED.")
+        if self.debug["time_buttons"]:
+            logging.info("Time to mute: {0} seconds".format(time.time() - self._main.controlLayout.muteClickedTime))
 
     def unmute(self):
-        print("SOUND ON.")
+        logging.info("SOUND ON.")
+        if self.debug["time_buttons"]:
+            logging.info("Time to unmute: {0} seconds".format(time.time() - self._main.controlLayout.muteClickedTime))
 
 class MainWidget(QWidget):
     """
     description to be created at a later time
     """
-    def __init__(self):
+    def __init__(self, debug):
         super().__init__()
-        self.initUI()
+        self.initUI(debug)
 
-    def initUI(self):
+    def initUI(self, debug):
         self.layout = QHBoxLayout()
-        self.plot = PlotCanvas()
-        self.controlLayout = ControlLayout()
+        self.plot = PlotCanvas(debug)
+        self.controlLayout = ControlLayout(debug)
         self.layout.addWidget(self.plot, 75)
         self.layout.addLayout(self.controlLayout, 25)
         self.setLayout(self.layout)
@@ -120,12 +142,12 @@ class ControlLayout(QVBoxLayout):
     muteSignal = pyqtSignal()
     unmuteSignal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, debug):
         super().__init__()
-        self.initUI()
+        self.initUI(debug)
 
-    def initUI(self):
-        self.controlGroupBox = ControlGroupBox()    # defined in ui/controlGroupBox.py
+    def initUI(self, debug):
+        self.controlGroupBox = ControlGroupBox(debug)    # defined in ui/controlGroupBox.py
         self.muteButton = QPushButton("Mute/Unmute")
         self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         self.muteButton.setCheckable(True)
@@ -136,6 +158,7 @@ class ControlLayout(QVBoxLayout):
         self.addWidget(self.muteButton, 1)
 
     def onMuteButtonClicked(self, btnChecked):
+        self.muteClickedTime = time.time()
         if btnChecked:
             self.muteSignal.emit()
         else:
