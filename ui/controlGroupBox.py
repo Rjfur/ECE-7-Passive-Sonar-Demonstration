@@ -41,7 +41,7 @@ class ControlGroupBox(QGroupBox):
 
         self.button1 = self.createButton("Whale", self.soundButtonLayout)
         self.button2 = self.createButton("Shrimp", self.soundButtonLayout)
-        self.button3 = self.createButton("Shipping Trawler", self.soundButtonLayout)
+        self.button3 = self.createButton("Ship", self.soundButtonLayout)
         #self.button4 = self.createButton("Quiet Target", self.soundButtonLayout)
         # self.hiddenButton = QPushButton()
         # self.hiddenButton.setCheckable(True)

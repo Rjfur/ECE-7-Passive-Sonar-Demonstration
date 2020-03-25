@@ -2,7 +2,6 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                             QPushButton, QSizePolicy, qApp
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtMultimedia import QSound
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
@@ -10,7 +9,7 @@ from ui.plot import PlotCanvas
 
 # local core imports
 from core.input import UserInputStream
-from core.output import UserOutputStream
+from core.output import MediaPlayer
 
 # For handling debug output
 import logging
@@ -42,7 +41,7 @@ class MainWindow(QMainWindow):
 
         # initialize other classes
         self.inputStream = UserInputStream(debug)
-        self.outputStream = UserOutputStream()
+        self.soundPlayer = MediaPlayer()
 
         # signal connections
         # input and output modes use buttons, plot, audio streams
@@ -81,7 +80,7 @@ class MainWindow(QMainWindow):
         self.inputStream.start()
         self._main.plot.beginAnimation(self.inputStream)
         if self.debug["time_buttons"]:
-            logging.info("Time to begin input mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
+            logging.info("Time to begin input mode: {0} ms".format((time.time() - self._main.controlLayout.controlGroupBox.clickedTime) * 1000))
 
     def endInputMode(self):
         logging.info("END INPUT MODE.")
@@ -93,29 +92,31 @@ class MainWindow(QMainWindow):
         except AttributeError:
             pass
         if self.debug["time_buttons"]:
-            logging.info("Time to stop input mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
+            logging.info("Time to stop input mode: {0} ms".format((time.time() - self._main.controlLayout.controlGroupBox.clickedTime) * 1000))
 
     def beginOutputMode(self, btnID):
         logging.info("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
-        self.outputStream.buttonToFile(btnID)
+        self.soundPlayer.buttonToFile(btnID)
         if self.debug["time_buttons"]:
-            logging.info("Time to begin output mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
+            logging.info("Time to begin output mode: {0} ms".format((time.time() - self._main.controlLayout.controlGroupBox.clickedTime) * 1000))
 
     def endOutputMode(self):
         logging.info("END OUTPUT MODE.")
-        self.outputStream.stopPlayback()
+        self.soundPlayer.stopPlayback()
         if self.debug["time_buttons"]:
-            logging.info("Time to stop output mode: {0} seconds".format(time.time() - self._main.controlLayout.controlGroupBox.clickedTime))
+            logging.info("Time to stop output mode: {0} ms".format((time.time() - self._main.controlLayout.controlGroupBox.clickedTime) * 1000))
 
     def mute(self):
         logging.info("SOUND MUTED.")
+        self.soundPlayer.setMuted(True)
         if self.debug["time_buttons"]:
-            logging.info("Time to mute: {0} seconds".format(time.time() - self._main.controlLayout.muteClickedTime))
+            logging.info("Time to mute: {0} ms".format((time.time() - self._main.controlLayout.muteClickedTime) * 1000))
 
     def unmute(self):
         logging.info("SOUND ON.")
+        self.soundPlayer.setMuted(False)
         if self.debug["time_buttons"]:
-            logging.info("Time to unmute: {0} seconds".format(time.time() - self._main.controlLayout.muteClickedTime))
+            logging.info("Time to unmute: {0} ms".format((time.time() - self._main.controlLayout.muteClickedTime) * 1000))
 
 class MainWidget(QWidget):
     """
