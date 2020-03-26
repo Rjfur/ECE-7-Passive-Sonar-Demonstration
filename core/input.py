@@ -73,9 +73,10 @@ class UserInputStream(sd.InputStream):
             logging.info(indata)
         if self.debug["bytes"]:
             # logging.info(indata[0][0])
-            logging.info(sys.getsizeof(indata[0][0]))   # type: numpy mdarray
+            logging.info(self.dtype)
+            # logging.info(sys.getsizeof(indata[0][0]))   # type: numpy mdarray
         if self.debug["time_processing"]:
-            logging.info("processing time: {0}".format(time.inputBufferAdcTime - time.currentTime))
+            logging.info("processing time: {0} ms".format((time.inputBufferAdcTime - time.currentTime) * 1000))
 
         # print(len(l))
         # print(len(r))

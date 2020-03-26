@@ -34,7 +34,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
     parents=[parser])
 parser.add_argument(
-    'channels', type=int, default=[1, 2], nargs='*', metavar='CHANNEL',
+    'channels', type=int, default=[0, 1], nargs='*', metavar='CHANNEL',
     help='input channels to plot (default: the first)')
 parser.add_argument(
     '-d', '--device', type=int_or_str,

@@ -62,8 +62,8 @@ class PlotCanvas(FigureCanvas):
             beginFrame = time.time()
 
         x = stream.time_x
-        y1 = stream.l[:480] # limit to first 480 samples
-        y2 = stream.r[:480] # limit to first 480 samples
+        y1 = stream.l # limit to first 480 samples?
+        y2 = stream.r # limit to first 480 samples?
         # notice we are only calling set_data once, and bundling the y values into an array
         # self.line.set_data(x, np.array([y1, y2]))
         self.ax.clear()
