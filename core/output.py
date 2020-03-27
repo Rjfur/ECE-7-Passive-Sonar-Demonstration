@@ -20,20 +20,28 @@ class MediaPlayer(QMediaPlayer):
         elif index == 2:
             # shrimp
             self.setMedia(QMediaContent(QUrl.fromLocalFile("./sounds/snap2.mp3")))
-            self.play()
             print("PLAYING shrimp sound")
+            self.play()
         elif index == 3:
             # ship
             self.setMedia(QMediaContent(QUrl.fromLocalFile("./sounds/light.mp3")))
+            print("PLAYING ship sound")
             self.play()
-            pass
         elif index == 4:
-            # quiet target
-            pass
+            # whale (COMMENTARY)
+            self.setMedia(QMediaContent(QUrl.fromLocalFile("./sounds/hump1.mp3")))
+            print("PLAYING whale (commentary)")
+            self.play()
         elif index == 5:
-            pass
+            # shrimp (COMMENTARY)
+            self.setMedia(QMediaContent(QUrl.fromLocalFile("./sounds/snap2.mp3")))
+            print("PLAYING shrimp (commentary)")
+            self.play()
         elif index == 6:
-            pass
+            # ship (COMMENTARY)
+            self.setMedia(QMediaContent(QUrl.fromLocalFile("./sounds/light.mp3")))
+            print("PLAYING ship (commentary)")
+            self.play()
         elif index == 7:
             pass
         elif index == 8:
