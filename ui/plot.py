@@ -36,7 +36,8 @@ class PlotCanvas(FigureCanvas):
 
     def plotSetup(self):
         # data = [6 for i in range(25)]
-        self.ax = self.figure.add_subplot(111)
+        self.ax = self.figure.add_subplot(111)  # set polar projection
+        # self.ax.set_xticks(np.pi/180. * np.linspace(180,  -180, 8, endpoint=False))
         # self.ax = plt.axes(xlim=(0, 20000), ylim=(0, 100000))
         self.line, = self.ax.plot([], [], lw=2)
         # ax.plot(data, 'r-')
@@ -61,14 +62,25 @@ class PlotCanvas(FigureCanvas):
         if self.debug["time_update"]:
             beginFrame = time.time()
 
-        x = stream.time_x
-        y1 = stream.l # limit to first 480 samples?
-        y2 = stream.r # limit to first 480 samples?
+        # x = stream.time_x
+        # y1 = stream.l # limit to first 480 samples?
+        # y2 = stream.r # limit to first 480 samples?
+
+        theta = stream.localization.theta
+        x = stream.localization.x
+
         # notice we are only calling set_data once, and bundling the y values into an array
         # self.line.set_data(x, np.array([y1, y2]))
         self.ax.clear()
-        self.ax.plot(x, y1)
-        self.ax.plot(x, y2)
+        # self.ax.set_xticks([0, 1, 2])
+        self.ax.plot(theta, x)
+
+        print(theta)
+        print(x)
+
+
+        # self.ax.plot(x, y1)
+        # self.ax.plot(x, y2)
 
         if self.debug["time_update"]:
             logging.info(time.time() - beginFrame)

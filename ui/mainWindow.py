@@ -28,6 +28,9 @@ class MainWindow(QMainWindow):
         # set debug mode
         self.debug = debug
 
+        # microphone sample rate in Hz
+        self.sampleRate = 48000
+
         # setup main window parameters
         self.title = "Passive Sonar Demonstration System"
         self.left = 100
@@ -40,7 +43,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self._main)
 
         # initialize other classes
-        self.inputStream = UserInputStream(debug)
+        self.inputStream = UserInputStream(self.sampleRate, debug)
         self.soundPlayer = MediaPlayer()
 
         # signal connections
