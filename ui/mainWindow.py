@@ -153,10 +153,13 @@ class MainWidget(QWidget):
 
         if buttonID == 1 or buttonID == 4:
             self.img.setPixmap(self.pixmap1)
+            self.img.setScaledContents(True)
         elif buttonID == 2 or buttonID == 5:
             self.img.setPixmap(self.pixmap2)
+            self.img.setScaledContents(True)
         elif buttonID == 3 or buttonID == 6:
             self.img.setPixmap(self.pixmap3)
+            self.img.setScaledContents(True)
 
 class ControlLayout(QVBoxLayout):
     """
@@ -188,7 +191,7 @@ class ControlLayout(QVBoxLayout):
             self.muteSignal.emit()
         else:
             self.unmuteSignal.emit()
-
+         
 # if __name__ == "__main__":
 #     logging.info("Starting application.")
 #     app = QApplication(sys.argv)
