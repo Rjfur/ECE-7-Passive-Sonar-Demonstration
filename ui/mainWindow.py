@@ -1,7 +1,8 @@
 # PyQt5 imports for UI elements
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
-                            QPushButton, QSizePolicy, qApp
+                            QPushButton, QSizePolicy, QLabel, qApp, QStackedWidget
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QPixmap
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
@@ -68,6 +69,7 @@ class MainWindow(QMainWindow):
         self.horizontalLayout = QHBoxLayout()
         self.setCentralWidget = self.horizontalLayout
 
+
         #self.statusBar().showMessage("")
         self.show()
 
@@ -80,6 +82,7 @@ class MainWindow(QMainWindow):
 
     def beginInputMode(self):
         logging.info("BEGINNING INPUT MODE...")
+        self._main.stackedwidget.setCurrentWidget(self._main.plot) #set current widget to plot
         self.inputStream.start()
         self._main.plot.beginAnimation(self.inputStream)
         if self.debug["time_buttons"]:
@@ -99,10 +102,12 @@ class MainWindow(QMainWindow):
 
     def beginOutputMode(self, btnID):
         logging.info("BEGINNING OUTPUT MODE FOR BUTTON {0}...".format(btnID))
+        self._main.setImage(btnID)
+        self._main.stackedwidget.setCurrentWidget(self._main.img) #set current widget to plot
         self.soundPlayer.buttonToFile(btnID)
         if self.debug["time_buttons"]:
             logging.info("Time to begin output mode: {0} ms".format((time.time() - self._main.controlLayout.controlGroupBox.clickedTime) * 1000))
-
+            
     def endOutputMode(self):
         logging.info("END OUTPUT MODE.")
         self.soundPlayer.stopPlayback()
@@ -131,11 +136,27 @@ class MainWidget(QWidget):
 
     def initUI(self, debug):
         self.layout = QHBoxLayout()
+        self.stackedwidget = QStackedWidget()
+        self.img = QLabel(self)
+        self.pixmap1 = QPixmap('Sonargrams/1_PlainsonarGramWithOverlays.png')
+        self.pixmap2 = QPixmap('Sonargrams/2_PlainsonarGramWithOverlays.png')
+        self.pixmap3 = QPixmap('Sonargrams/3_PlainsonarGramWithOverlays.png')
         self.plot = PlotCanvas(debug)
+        self.stackedwidget.addWidget(self.img)
+        self.stackedwidget.addWidget(self.plot)
         self.controlLayout = ControlLayout(debug)
-        self.layout.addWidget(self.plot, 75)
+        self.layout.addWidget(self.stackedwidget, 75)
         self.layout.addLayout(self.controlLayout, 25)
         self.setLayout(self.layout)
+    
+    def setImage(self, buttonID):
+
+        if buttonID == 1 or buttonID == 4:
+            self.img.setPixmap(self.pixmap1)
+        elif buttonID == 2 or buttonID == 5:
+            self.img.setPixmap(self.pixmap2)
+        elif buttonID == 3 or buttonID == 6:
+            self.img.setPixmap(self.pixmap3)
 
 class ControlLayout(QVBoxLayout):
     """
