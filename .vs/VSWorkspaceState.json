@@ -2,9 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\core",
+    "\\Sonargrams",
+    "\\sounds",
     "\\testing",
     "\\ui"
   ],
-  "SelectedNode": "\\core\\output.py",
+  "SelectedNode": "\\ui\\mainWindow.py",
   "PreviewInSolutionExplorer": true
 }

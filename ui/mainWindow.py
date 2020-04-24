@@ -1,8 +1,9 @@
 # PyQt5 imports for UI elements
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
-                            QPushButton, QSizePolicy, QLabel, qApp, QStackedWidget
+                            QPushButton, QSizePolicy, QLabel, qApp, QStackedWidget, QApplication, QStyle 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
+
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
@@ -138,9 +139,9 @@ class MainWidget(QWidget):
         self.layout = QHBoxLayout()
         self.stackedwidget = QStackedWidget()
         self.img = QLabel(self)
-        self.pixmap1 = QPixmap('Sonargrams/1_PlainsonarGramWithOverlays.png')
-        self.pixmap2 = QPixmap('Sonargrams/2_PlainsonarGramWithOverlays.png')
-        self.pixmap3 = QPixmap('Sonargrams/3_PlainsonarGramWithOverlays.png')
+        self.pixmap1 = QPixmap('Sonargrams/Sonargram_1.png')
+        self.pixmap2 = QPixmap('Sonargrams/Sonargram_2.png')
+        self.pixmap3 = QPixmap('Sonargrams/Sonargram_3.png')
         self.plot = PlotCanvas(debug)
         self.stackedwidget.addWidget(self.img)
         self.stackedwidget.addWidget(self.plot)
@@ -150,6 +151,7 @@ class MainWidget(QWidget):
         self.setLayout(self.layout)
     
     def setImage(self, buttonID):
+        # function to change image for each unique output option.
 
         if buttonID == 1 or buttonID == 4:
             self.img.setPixmap(self.pixmap1)
@@ -176,11 +178,11 @@ class ControlLayout(QVBoxLayout):
 
     def initUI(self, debug):
         self.controlGroupBox = ControlGroupBox(debug)    # defined in ui/controlGroupBox.py
-        self.muteButton = QPushButton("Mute/Unmute")
+        self.muteButton = QPushButton("Mute")
         self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         self.muteButton.setCheckable(True)
 
-        self.muteButton.clicked.connect(self.onMuteButtonClicked)
+        self.muteButton.clicked.connect(self.onMuteButtonClicked) #connect button click event to click function
 
         self.addWidget(self.controlGroupBox, 5)
         self.addWidget(self.muteButton, 1)
@@ -189,8 +191,13 @@ class ControlLayout(QVBoxLayout):
         self.muteClickedTime = time.time()
         if btnChecked:
             self.muteSignal.emit()
+            self.muteButton.setText('Unmute')
+            self.muteButton.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_MediaVolumeMuted)))
+          
         else:
             self.unmuteSignal.emit()
+            self.muteButton.setText('Mute')
+            self.muteButton.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_MediaVolume)))
          
 # if __name__ == "__main__":
 #     logging.info("Starting application.")
