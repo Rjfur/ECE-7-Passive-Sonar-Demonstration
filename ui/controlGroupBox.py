@@ -2,6 +2,10 @@
 from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QSizePolicy, \
                             QButtonGroup, QGridLayout
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal
+
+from PyQt5 import QtGui
+
 
 # used for measuring time for debugging
 import time
@@ -40,18 +44,31 @@ class ControlGroupBox(QGroupBox):
         self.commentaryButtonLayout = QVBoxLayout()
 
         self.button1 = self.createButton("Whale", self.soundButtonLayout)
+        self.button1.setFont(QtGui.QFont("Arial", 12,))
         self.button2 = self.createButton("Shrimp", self.soundButtonLayout)
+        self.button2.setFont(QtGui.QFont("Arial", 12,))
         self.button3 = self.createButton("Ship", self.soundButtonLayout)
+        self.button3.setFont(QtGui.QFont("Arial", 12,))
         #self.button4 = self.createButton("Quiet Target", self.soundButtonLayout)
         # self.hiddenButton = QPushButton()
         # self.hiddenButton.setCheckable(True)
 
-        self.button1Commentary = self.createButton("? 1", self.commentaryButtonLayout)
-        self.button2Commentary = self.createButton("? 2", self.commentaryButtonLayout)
-        self.button3Commentary = self.createButton("? 3", self.commentaryButtonLayout)
+        self.button1Commentary = self.createButton("Commentary", self.commentaryButtonLayout)
+        self.button1Commentary.setFont(QtGui.QFont("Arial", 12,))
+        #self.button1Commentary.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)))
+
+        self.button2Commentary = self.createButton("Commentary", self.commentaryButtonLayout)
+        self.button2Commentary.setFont(QtGui.QFont("Arial", 12,))
+        #self.button2Commentary.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)))
+
+        self.button3Commentary = self.createButton("Commentary", self.commentaryButtonLayout)
+        self.button3Commentary.setFont(QtGui.QFont("Arial", 12,))
+        #self.button3Commentary.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)))
+
         #self.button4Commentary = self.createButton("? 4", self.commentaryButtonLayout)
 
         self.userInputButton = QPushButton("User Input")
+        self.userInputButton.setFont(QtGui.QFont("Arial", 12,))
         self.userInputButton.setCheckable(True)
         self.userInputButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
 

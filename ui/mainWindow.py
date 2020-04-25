@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, \
                             QPushButton, QSizePolicy, QLabel, qApp, QStackedWidget, QApplication, QStyle 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
-
+from PyQt5 import QtGui
 
 # local UI imports
 from ui.controlGroupBox import ControlGroupBox
@@ -59,6 +59,8 @@ class MainWindow(QMainWindow):
 
         self.initUI()
         logging.info("UI loaded.")
+
+        font = QtGui.QFont
 
     def initUI(self):
         """
@@ -181,6 +183,7 @@ class ControlLayout(QVBoxLayout):
         self.muteButton = QPushButton("Mute")
         self.muteButton.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
         self.muteButton.setCheckable(True)
+        self.muteButton.setFont(QtGui.QFont("Arial", 12))
 
         self.muteButton.clicked.connect(self.onMuteButtonClicked) #connect button click event to click function
 
@@ -191,12 +194,13 @@ class ControlLayout(QVBoxLayout):
         self.muteClickedTime = time.time()
         if btnChecked:
             self.muteSignal.emit()
-            self.muteButton.setText('Unmute')
+            self.muteButton.setText('Audio Disabled')
+
             self.muteButton.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_MediaVolumeMuted)))
           
         else:
             self.unmuteSignal.emit()
-            self.muteButton.setText('Mute')
+            self.muteButton.setText('Audio Enabled')
             self.muteButton.setIcon(QIcon(QApplication.style().standardIcon(QStyle.SP_MediaVolume)))
          
 # if __name__ == "__main__":
