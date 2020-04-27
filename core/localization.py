@@ -45,7 +45,7 @@ class Localization():
             L = len(al) + len(ar) - 1
 
             # these are plotted
-            self.theta = np.linspace(-90, 90, L)
+            self.theta = np.radians(np.linspace(-90, 90, L))
             # for i in range(len(self.theta)):
             #     if self.theta[i] < 0:
             #         self.theta[i] = 360.0 + self.theta[i]
@@ -62,9 +62,9 @@ class Localization():
             thetaHat = self.theta[iMax]
             thetaMax[0:self.N-1] = thetaMax[1:]
             thetaMax[self.N-1] = thetaHat
-            thetaHat = np.mean(thetaMax)
+            self.thetaHat = np.degrees(np.mean(thetaMax))
 
-            print(self.theta)
+            # print(self.theta)
 
             iStart = iStop
             iStop = iStart + self.sampWindow - 1

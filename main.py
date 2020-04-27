@@ -1,6 +1,7 @@
 import sys
 import argparse # for handling command line arguments
 import logging  # for handling debug output
+import datetime # for printing time in the case of a crash
 
 from PyQt5.QtWidgets import QApplication    # for starting UI
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
         "amplitude": False,
         "bytes": False,
         "samples": False,
-        "localiztion": False,
+        "localization": False,
         "time_buttons": False,
         "time_processing": False,
         "time_localization": False,
@@ -76,4 +77,7 @@ if __name__ == "__main__":
     #     # if not using verbose output only print errors and warnings
     #     logging.basicConfig(format="%(levelname)s: %(message)s")
 
-    main(debug)
+    try:
+        main(debug)
+    except Exception:
+        print(f"ERROR OCCURRED AT: {datetime.datetime.now()})

@@ -36,7 +36,9 @@ class PlotCanvas(FigureCanvas):
 
     def plotSetup(self):
         # data = [6 for i in range(25)]
-        self.ax = self.figure.add_subplot(111)  # set polar projection
+        self.ax = self.figure.add_subplot(111, projection='polar')  # set polar projection
+        self.ax.set_theta_zero_location('W', offset=90) # want 0 degrees at bottom of plot
+        self.ax.set_xlabel("Angle (deg)")
         # self.ax.set_xticks(np.pi/180. * np.linspace(180,  -180, 8, endpoint=False))
         # self.ax = plt.axes(xlim=(0, 20000), ylim=(0, 100000))
         self.line, = self.ax.plot([], [], lw=2)
@@ -73,10 +75,17 @@ class PlotCanvas(FigureCanvas):
         # self.line.set_data(x, np.array([y1, y2]))
         self.ax.clear()
         # self.ax.set_xticks([0, 1, 2])
+        self.ax.set_xlabel("Angle (deg)")
+        # self.ax.set_ylabel("Amplitude")
+        self.ax.set_theta_zero_location('W', offset=90) # want 0 degrees at bottom of plot
+        # self.ax.set_thetamin(90)
+        # self.ax.set_thetamax(270)
+        # self.ax.text(0, 0, "Angle = {stream.localization.thetaHat}", horizontalalignment='right', verticalalignment='top')
+        self.ax.annotate(f"Max Angle = {stream.localization.thetaHat:.1f}", xy=(0, 1), xytext=(0, 0), va='top', xycoords='axes fraction', textcoords='offset points')
         self.ax.plot(theta, x)
 
-        print(theta)
-        print(x)
+        # print(theta)
+        # print(x)
 
 
         # self.ax.plot(x, y1)
@@ -87,13 +96,13 @@ class PlotCanvas(FigureCanvas):
 
         return self.line,
 
-    def animateFFT(self, frame, stream):
-        self.ax.clear()
-        self.ax.set_xlim([0, 20000])
-        self.ax.set_ylim([0, 100000])
-        t = np.linspace(0, 48000, num=480)
-        freq = np.fft.fftfreq(t.shape[-1])
-        sp = np.fft.fft(stream.l)
-        sp2 = np.fft.fft(stream.r)
-        self.ax.plot(t, sp.real)
-        self.ax.plot(t, sp2.real)
+    # def animateFFT(self, frame, stream):
+    #     self.ax.clear()
+    #     self.ax.set_xlim([0, 20000])
+    #     self.ax.set_ylim([0, 100000])
+    #     t = np.linspace(0, 48000, num=480)
+    #     freq = np.fft.fftfreq(t.shape[-1])
+    #     sp = np.fft.fft(stream.l)
+    #     sp2 = np.fft.fft(stream.r)
+    #     self.ax.plot(t, sp.real)
+    #     self.ax.plot(t, sp2.real)

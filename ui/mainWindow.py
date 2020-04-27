@@ -37,8 +37,8 @@ class MainWindow(QMainWindow):
         self.title = "Passive Sonar Demonstration System"
         self.left = 100
         self.top = 100
-        self.width = 1080
-        self.height = 720
+        self.width = 1400
+        self.height = 700
         self.minWidth = 800
         self.minHeight = 600
         self._main = MainWidget(debug)
