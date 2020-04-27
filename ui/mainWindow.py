@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         self.initUI()
         logging.info("UI loaded.")
 
-        font = QtGui.QFont
+        # font = QtGui.QFont
 
     def initUI(self):
         """

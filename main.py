@@ -80,4 +80,4 @@ if __name__ == "__main__":
     try:
         main(debug)
     except Exception:
-        print(f"ERROR OCCURRED AT: {datetime.datetime.now()})
+        print(f"ERROR OCCURRED AT: {datetime.datetime.now()}")

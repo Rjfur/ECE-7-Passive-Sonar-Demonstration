@@ -10,6 +10,9 @@ import logging
 # For getting size of sample in bytes
 import sys
 
+# For measuring current time
+import time as time_module
+
 # local import of localization code
 from core.localization import Localization
 
@@ -68,10 +71,14 @@ class UserInputStream(sd.InputStream):
         # print((time.currentTime - self.currentTime) * 1000)
 
         # print(self.latency)
+
+        if self.debug["time_localization"]:
+            start = time_module.time()
+
         self.numSamples = indata.shape[0]
         self.timeDifference = time.currentTime - self.currentTime
         self.currentTime = time.currentTime
-        self.time_x = np.linspace(0.0, self.timeDifference, self.numSamples)    #
+        self.time_x = np.linspace(0.0, self.timeDifference, self.numSamples)
 
         self.l = [channel[0] for channel in indata]
         self.r = [channel[1] for channel in indata]
@@ -90,12 +97,11 @@ class UserInputStream(sd.InputStream):
         if self.debug["time_processing"]:
             logging.info("processing time: {0} ms".format((time.inputBufferAdcTime - time.currentTime) * 1000))
 
-
-
         ######### localization #########
         self.localization.runLocalization(self.l, self.r)   # results stored to self.localization instance
 
-
+        if self.debug["time_localization"]:
+            logging.info("processing + localization time: {0} ms".format((time.inputBufferAdcTime - time.currentTime + time_module.time() - start) * 1000))
 
         # print(len(l))
         # print(len(r))
