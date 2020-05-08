@@ -18,7 +18,7 @@ from core.localization import Localization
 
 class UserInputStream(sd.InputStream):
     """
-    description to be created at a later time
+    Class that handles the storing of audio input data.
     """
     def __init__(self, sampleRate, debug):
         # call sd.InputStream initialization
@@ -30,7 +30,7 @@ class UserInputStream(sd.InputStream):
         except ValueError:
             super().__init__(samplerate=sampleRate, channels=2, dtype=np.int16, callback=self.inputCallback, latency="low")
 
-        self.localization = Localization(sampleRate)
+        self.localization = Localization(sampleRate)    # initialize Localization object using project sample rate
         
         self.sampleRate = sampleRate
         self.debug = debug
@@ -45,11 +45,6 @@ class UserInputStream(sd.InputStream):
         # initial amplitude values
         self.l = None
         self.r = None
-        # self.l = np.linspace(0.0, 1.0, 480)
-        # self.r = np.linspace(0.0, 1.0, 480)
-
-        # self.fftL = []
-        # self.fftR = []
 
         # used for setting up plot
         self.fig = plt.figure()
@@ -61,16 +56,8 @@ class UserInputStream(sd.InputStream):
 
     def inputCallback(self, indata, frames, time, status):
         """
-        called by stream periodically
+        Called by stream periodically, automatically
         """
-        # print("ADC time: ", time.inputBufferAdcTime)
-        # print("current time: ", time.currentTime)
-        # print("time difference: ", time.inputBufferAdcTime - time.currentTime)
-        # print("{0:6} | {1:6}".format(indata[0][0], indata[0][1]))
-
-        # print((time.currentTime - self.currentTime) * 1000)
-
-        # print(self.latency)
 
         if self.debug["time_localization"]:
             start = time_module.time()
@@ -82,9 +69,6 @@ class UserInputStream(sd.InputStream):
 
         self.l = [channel[0] for channel in indata]
         self.r = [channel[1] for channel in indata]
-
-        # self.fftL = np.fft.fft(self.l)
-        # self.fftR = np.fft.fft(self.r)
 
         if self.debug["samples"]:
             logging.info(indata.shape[0])
@@ -102,21 +86,3 @@ class UserInputStream(sd.InputStream):
 
         if self.debug["time_localization"]:
             logging.info("processing + localization time: {0} ms".format((time.inputBufferAdcTime - time.currentTime + time_module.time() - start) * 1000))
-
-        # print(len(l))
-        # print(len(r))
-        # print(len(time))
-        # plt.plot(self.time_x, np.fft.fft(self.l))
-        # plt.plot(time, r)
-        # print(l)
-        # print(indata[:][1])
-        # plt.show()
-
-    def initPlot(self):
-        self.line.set_data([], [])
-        return line,
-
-    def animateFrame(self):
-        self.line.set_data(self.localization.theta, self.localization.x)
-        return line,
-        

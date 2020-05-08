@@ -14,12 +14,10 @@ import time
 # For handling debug output
 import logging
 
-# from matplotlib.backends.qt_compat import QtCore, QtWidgets, is_pyqt5
-# from matplotlib.backends.backend_qt5agg import FigureCanvas, \
-#                                     NavigationToolbar2QT as NavigationToolbar
-# from matplotlib.figure import Figure
-
 class PlotCanvas(FigureCanvas):
+    """
+    Contains plot UI element, handles updating animated plot
+    """
     def __init__(self, debug, parent=None, width=5, height=4, dpi=100):
         self.debug = debug
         self.fig = Figure(figsize=(width, height), dpi=dpi)
@@ -48,8 +46,7 @@ class PlotCanvas(FigureCanvas):
 
     def beginAnimation(self, stream):
         self.anim = FuncAnimation(self.fig, self.animateFrame, init_func=self.clearPlot, interval=20, fargs=(stream,))
-        
-        # plt.show()
+
         self.draw()
 
     def clearPlot(self):
@@ -59,14 +56,9 @@ class PlotCanvas(FigureCanvas):
 
     def animateFrame(self, frame, stream):
         # frame automatically passed to function
-        # self.ax.plot(stream.time_x, stream.r)
 
         if self.debug["time_update"]:
             beginFrame = time.time()
-
-        # x = stream.time_x
-        # y1 = stream.l # limit to first 480 samples?
-        # y2 = stream.r # limit to first 480 samples?
 
         theta = stream.localization.theta
         x = stream.localization.x
@@ -84,25 +76,7 @@ class PlotCanvas(FigureCanvas):
         self.ax.annotate(f"Max Angle = {stream.localization.thetaHat:.1f}", xy=(0, 1), xytext=(0, 0), va='top', xycoords='axes fraction', textcoords='offset points')
         self.ax.plot(theta, x)
 
-        # print(theta)
-        # print(x)
-
-
-        # self.ax.plot(x, y1)
-        # self.ax.plot(x, y2)
-
         if self.debug["time_update"]:
             logging.info(time.time() - beginFrame)
 
         return self.line,
-
-    # def animateFFT(self, frame, stream):
-    #     self.ax.clear()
-    #     self.ax.set_xlim([0, 20000])
-    #     self.ax.set_ylim([0, 100000])
-    #     t = np.linspace(0, 48000, num=480)
-    #     freq = np.fft.fftfreq(t.shape[-1])
-    #     sp = np.fft.fft(stream.l)
-    #     sp2 = np.fft.fft(stream.r)
-    #     self.ax.plot(t, sp.real)
-    #     self.ax.plot(t, sp2.real)

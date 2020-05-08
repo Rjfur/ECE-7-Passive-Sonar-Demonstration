@@ -2,8 +2,8 @@ import numpy as np
 
 class Localization():
     """
+    Class containing localization function
     """
-    
 
     def __init__(self, sampleRate):
         IN2M = 0.0254 # inches to meter conversion

@@ -2,10 +2,8 @@
 from PyQt5.QtWidgets import QVBoxLayout, QGroupBox, QPushButton, QSizePolicy, \
                             QButtonGroup, QGridLayout
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtCore import pyqtSignal
 
 from PyQt5 import QtGui
-
 
 # used for measuring time for debugging
 import time
@@ -15,10 +13,11 @@ import logging
 
 class ControlGroupBox(QGroupBox):
     """
-    description to be created at a later time
+    Group box containing input and output mode buttons.
     """
 
-    # signals
+    # Signals for beginning and ending input/output mode.
+    # They connect to MainWindow object in mainWindow.py, and are handled there.
     beginInputModeSignal = pyqtSignal()
     endInputModeSignal = pyqtSignal()
     beginOutputModeSignal = pyqtSignal(int)
@@ -28,10 +27,11 @@ class ControlGroupBox(QGroupBox):
         super().__init__()
         self.initUI()
         self.debug = debug
-        # self.outputClickedTime = time.time()
-        # self.inputClickedTime = time.time()
 
     def initUI(self):
+        """
+        Initializes UI elements for the group box.
+        """
         self.buttonLayout = QGridLayout()
         self.initButtons()
         self.createSoundButtonGroup()
@@ -40,6 +40,10 @@ class ControlGroupBox(QGroupBox):
 
     #region BUTTON SETUP
     def initButtons(self):
+        """
+        Initializes 6 buttons. 3 are for the output mode sounds, the other 3 are for the commentary
+        for those sounds. Creates buttons, sets fonts, and adds them to the layout.
+        """
         self.soundButtonLayout = QVBoxLayout()
         self.commentaryButtonLayout = QVBoxLayout()
 
@@ -80,8 +84,14 @@ class ControlGroupBox(QGroupBox):
 
     def createButton(self, name, layout):
         """
-        creates a QPushButton with passed name, adds it to passed layout
-        returns button object
+        Creates a QPushButton with passed name, adds it to passed layout
+        returns QPushButton object
+
+        Arguments:
+            name (str) - button label, to be displayed on button in UI
+            layout (QVBoxLayout) - layout to add button to
+        Returns:
+            QPushButton - returns created button
         """
         btn = QPushButton(name)
         btn.setCheckable(True)
@@ -102,7 +112,7 @@ class ControlGroupBox(QGroupBox):
         # self.soundButtonGroup.addButton(self.button4, 4)
         # self.soundButtonGroup.addButton(self.hiddenButton, 5)
 
-        self.soundButtonGroup.buttonClicked.connect(self.onSoundButtonClicked)
+        self.soundButtonGroup.buttonClicked.connect(self.onSoundButtonClicked)  # when any button in group clicked, call onSoundButtonClicked method
 
     def createCommentaryButtonGroup(self):
         """
@@ -121,19 +131,24 @@ class ControlGroupBox(QGroupBox):
     #endregion
 
     #region ON BUTTON CLICKED
-    # methods called when buttons clicked, 
+    # methods called when buttons clicked
     def onSoundButtonClicked(self, btn):
-        # stop playing of other sounds
-        # stop playing of commentary sounds
-        # stop input mode
+        """
+        Method called when sound button is clicked. Determines which button was clicked,
+        if it is being selected or de-selected, and emits begin/end output/input mode
+        signals accordingly.
+
+        Arguments:
+            btn (QPushButton) - button that was clicked
+        """
 
         # debug
         self.clickedTime = time.time()
+        logging.info("\t{0}".format(btn.text()))    # print name of button that was pressed
 
-        logging.info("\t{0}".format(btn.text()))
-        btnID = self.soundButtonGroup.checkedId()
+        btnID = self.soundButtonGroup.checkedId()   # get the ID number of button that was pressed
 
-        btnChecked = btn.isChecked()
+        btnChecked = btn.isChecked()    # determine if the button was selected or de-selected
 
         # uncheck all other buttons
         self.userInputButton.setChecked(False)
@@ -141,35 +156,36 @@ class ControlGroupBox(QGroupBox):
             button.setChecked(False)
         for button in self.soundButtonGroup.buttons():
             if button != btn:
-                button.setChecked(False)
+                button.setChecked(False)    # uncheck all other sound buttons
 
-        # if turning button on
-        #   emit endInputModeSignal
-        #   emit beginOutputModeSignal(btn)
-        # else
-        #   emit endOutputModeSignal(btn)
-
+        # if button is being checked, end input mode and begin output mode for that button
         if btnChecked:
             self.endInputModeSignal.emit()
             # print("end input mode signal emitted")
             self.beginOutputModeSignal.emit(btnID)
             # print("begin output mode signal emitted (button {0})".format(btnID))
+        # button is being unchecked, end output mode
         else:
             self.endOutputModeSignal.emit()
             # print("end output mode signal emitted")
 
     def onCommentaryButtonClicked(self, btn):
-        # stop playing of other sounds
-        # stop playing of commentary sounds
-        # stop input mode
+        """
+        Method called when commentary button is clicked. Determines which button was clicked,
+        if it is being selected or de-selected, and emits begin/end output/input mode
+        signals accordingly.
+
+        Arguments:
+            btn (QPushButton) - button that was clicked
+        """
 
         # debug
         self.clickedTime = time.time()
+        logging.info("\t{0}".format(btn.text()))    # print name of button that was pressed
 
-        logging.info("\t{0}".format(btn.text()))
-        btnID = self.commentaryButtonGroup.checkedId()
+        btnID = self.commentaryButtonGroup.checkedId()  # get the ID number of button that was pressed
 
-        btnChecked = btn.isChecked()
+        btnChecked = btn.isChecked()    # determine if the button was selected or de-selected
 
         # uncheck all other buttons
         self.userInputButton.setChecked(False)
@@ -178,41 +194,44 @@ class ControlGroupBox(QGroupBox):
         for button in self.commentaryButtonGroup.buttons():
             if button != btn:
                 button.setChecked(False)
+
+        # if button is being checked, end input mode and begin output mode for that button
         if btnChecked:
             self.endInputModeSignal.emit()
-            # print("end input mode signal emitted")
-            # print(btnID)
-            # print(len(self.soundButtonGroup.buttons()))
             self.beginOutputModeSignal.emit(btnID + len(self.soundButtonGroup.buttons()))
                                                     # first comm btn ID is after last sound btn ID
                                                     # allows number of sound buttons to change if needed
-            # print("begin output mode signal emitted (button {0})".format(btnID))
+        # button is being unchecked, end output mode
         else:
             self.endOutputModeSignal.emit()
             # print("end output mode signal emitted")
 
     def onUserInputButtonClicked(self, btnChecked):
-        # uncheck all other buttons
+        """
+        Method called when input button is clicked. Determines which button was clicked,
+        if it is being selected or de-selected, and emits begin/end input/output mode
+        signals accordingly.
+
+        Arguments:
+            btnChecked (bool) - button that was clicked
+        """
 
         # debug
         self.clickedTime = time.time()
 
+        # uncheck output mode buttons
         for button in self.commentaryButtonGroup.buttons():
             button.setChecked(False)
         for button in self.soundButtonGroup.buttons():
             button.setChecked(False)
 
-        # if turning button on
-        #   emit endOutputModeSignal
-        #   emit beginInputModeSignal
-        # else
-        #   emit endInputModeSignal
-
+        # if button is being checked, begin input mode
         if btnChecked:
             self.endOutputModeSignal.emit()
             # print("end output mode signal emitted")
             self.beginInputModeSignal.emit()
             # print("begin input mode signal emitted")
+        # button is being unchecked, end input mode
         else:
             self.endInputModeSignal.emit()
             # print("end input mode signal emitted")
